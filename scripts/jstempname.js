@@ -1,7 +1,8 @@
-var initialLocation;
-var pathToAsteroidsFile = 'mockNearEarthAstroids.csv';
+var pathToAsteroidsFile = 'mockNearEarthAsteroids_byInclination.csv';
 var browserSupportFlag =  new Boolean();
-var maptype = google.maps.MapTypeId.HYBRID
+var maptype = google.maps.MapTypeId.ROADMAP
+var defaultZoom = 14
+var initialLocation;
 var bostonLocation = new google.maps.LatLng(42.3601, -71.0589);
 
 var asteroidHeight = 32;
@@ -12,26 +13,35 @@ var asteroidIcon = {
   url: "images/asteroid_dealwithit.png", // url
   scaledSize: new google.maps.Size(asteroidWidth, asteroidHeight), // scaled size
   origin: new google.maps.Point(0, 0), // origin
-  anchor: new google.maps.Point(0, 0) // anchor
+  anchor: new google.maps.Point(0, 0)  // anchor
 };
 var sunIcon = {
   url: "images/sun_dealwithit.png", // url
   scaledSize: new google.maps.Size(sunWidth, sunHeight), // scaled size
   origin: new google.maps.Point(0, 0), // origin
-  anchor: new google.maps.Point(0, 0) // anchor
+  anchor: new google.maps.Point(0, 0)  // anchor
 }
 var earthIcon = {
   url: "images/earth_dealwithit.png", // url
   scaledSize: new google.maps.Size(sunWidth, sunHeight), // scaled size
   origin: new google.maps.Point(0, 0), // origin
-  anchor: new google.maps.Point(0, 0) // anchor
+  anchor: new google.maps.Point(0, 0)  // anchor
 }
+
+var asteroidList = [
+  { name: '9081 APM', location: { lat:42.3633, long:-71.0566 } },
+  { name: '8081 APM', location: { lat:42.3580, long:-71.0597 } },
+  { name: '7077 APM', location: { lat:42.3480, long:-71.0537 } },
+  { name: '9011 APM', location: { lat:42.3580, long:-71.0497 } },
+  { name: '5634 APM', location: { lat:42.3680, long:-71.0697 } },
+  { name: '8783 APM', location: { lat:42.3650, long:-71.0590 } }
+];
 
 function initialize() {
   // Create the map.
   var mapOptions = {
-    zoom: 14,
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+    zoom: defaultZoom,
+    mapTypeId: maptype
   };
   var map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
   
@@ -41,7 +51,7 @@ function initialize() {
     navigator.geolocation.getCurrentPosition(function(position) {
       initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
       map.setCenter(initialLocation);
-      var marker1 = new google.maps.Marker({
+      var userMarker = new google.maps.Marker({
           position: initialLocation,
           map: map,
           icon: earthIcon,
@@ -57,58 +67,66 @@ function initialize() {
     browserSupportFlag = false;
     handleNoGeolocation(browserSupportFlag);
   }
-
-  function handleNoGeolocation(errorFlag) {
-    if (errorFlag == true) {
-      alert("Geolocation service failed. We've placed you in Boston");
-      initialLocation = bostonLocation;
-    } else {
-      alert("Your browser doesn't support geolocation. We've placed you in Boston.");
-      initialLocation = bostonLocation;
-    }
-    map.setCenter(initialLocation);
-    var marker1 = new google.maps.Marker({
-        position: initialLocation,
-        map: map,
-        icon: earthIcon,
-        title: 'YOU ARE HERE',
-        zIndex: 3
-    });
-  }
   
-  readCsvFile(pathToAsteroidsFile);
-  
-  var marker2 = new google.maps.Marker({
-      position: bostonLocation,
-      map: map,
-      icon: asteroidIcon,
-      title: 'YOU ARE HERE',
-      zIndex: 4
-  });
-  var marker3 = new google.maps.Marker({
+  var sunMarker = new google.maps.Marker({
       position: bostonLocation,
       map: map,
       icon: sunIcon,
       title: 'YOU ARE HERE',
       zIndex: 1
   });
+  
+  drawMarkers(map)
+  readCsvFile(pathToAsteroidsFile);
+}
+
+function handleNoGeolocation(errorFlag) {
+  if (errorFlag == true) {
+    alert("Geolocation service failed. We've placed you in Boston");
+    initialLocation = bostonLocation;
+  } else {
+    alert("Your browser doesn't support geolocation. We've placed you in Boston.");
+    initialLocation = bostonLocation;
+  }
+  map.setCenter(initialLocation);
+  var userMarker = new google.maps.Marker({
+    position: initialLocation,
+    map: map,
+    icon: earthIcon,
+    title: 'YOU ARE HERE',
+    zIndex: 3
+  });
+}
+
+function drawMarkers(map) {
+  for (asteroid of asteroidList)
+  {
+    asteroidPosition = new google.maps.LatLng(asteroid.location.lat, asteroid.location.long);
+    new google.maps.Marker({
+      position: asteroidPosition,
+      map: map,
+      icon: asteroidIcon,
+      title: asteroid.name,
+      zIndex: 4
+    });
+  }
 }
 
 function readCsvFile(file) {
-    var rawFile = new XMLHttpRequest();
-    rawFile.open("GET", file, false);
-    rawFile.onreadystatechange = function ()
+  var rawFile = new XMLHttpRequest();
+  rawFile.open("GET", file, false);
+  rawFile.onreadystatechange = function ()
+  {
+    if(rawFile.readyState === 4)
     {
-        if(rawFile.readyState === 4)
-        {
-            if(rawFile.status === 200 || rawFile.status == 0)
-            {
-                var allText = rawFile.responseText;
-                var csvArray = csvToArray(allText)
-                //alert(csvArray[0].Object);
-            }
-        }
+      if(rawFile.status === 200 || rawFile.status == 0)
+      {
+        var allText = rawFile.responseText;
+        var csvArray = csvToArray(allText)
+        alert(csvArray[0].Object);
+      }
     }
+  }
     rawFile.send(null);
 }
 
@@ -120,16 +138,18 @@ function csvToArray(csvString) {
   // Take off the first line to get the headers, then split that into an array
   var csvHeaders = csvRows.shift().split(',');
   // Loop through remaining rows
-  for(var rowIndex = 0; rowIndex < csvRows.length; ++rowIndex){
+  for (var rowIndex = 0; rowIndex < csvRows.length; ++rowIndex)
+  {
     var rowArray  = csvRows[rowIndex].split(',');
     // Create a new row object to store our data.
     var rowObject = csvArray[rowIndex] = {};
     // Then iterate through the remaining properties and use the headers as keys
-    for(var propIndex = 0; propIndex < rowArray.length; ++propIndex){
+    for (var propIndex = 0; propIndex < rowArray.length; ++propIndex)
+    {
       // Grab the value from the row array we're looping through...
       var propValue = rowArray[propIndex].replace(/^"|"$/g,'');
       // ...also grab the relevant header (the RegExp in both of these removes quotes)
-      var propLabel = csvHeaders[propIndex].replace(/^"|"$/g,'');;
+      var propLabel = csvHeaders[propIndex].replace(/^"|"$/g,'');
       rowObject[propLabel] = propValue;
     }
   }
