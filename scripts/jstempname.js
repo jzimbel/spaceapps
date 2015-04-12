@@ -2,8 +2,11 @@ var pathToAsteroidsFile = 'mockNearEarthAsteroids_byInclination.csv';
 var browserSupportFlag =  new Boolean();
 var maptype = google.maps.MapTypeId.ROADMAP
 var defaultZoom = 14
-var initialLocation;
+var userLocation;
 var bostonLocation = new google.maps.LatLng(42.3601, -71.0589);
+var earthx = -9.288690677218622E-01;
+var earthy = -3.686172168756586E-01;
+var earthz = -1.341590106057282E-04;
 
 var asteroidHeight = 32;
 var asteroidWidth  = 20;
@@ -63,13 +66,6 @@ var asteroidList = [
                                                                         { lat:42.2633, lng:-71.0566 }] }
 ];
 
-var flightPlanCoordinates = [
-    new google.maps.LatLng(42.3610, -71.0560),
-    new google.maps.LatLng(42.3710, -71.0560),
-    new google.maps.LatLng(42.3660, -71.0610),
-    new google.maps.LatLng(42.3610, -71.0560)
-];
-
 function initialize() {
   // Create the map.
   var mapOptions = {
@@ -81,28 +77,37 @@ function initialize() {
   // Try W3C Geolocation (Preferred)
   if(navigator.geolocation) {
     browserSupportFlag = true;
-    navigator.geolocation.getCurrentPosition(function(position) {
-      initialLocation = new google.maps.LatLng(position.coords.latitude,position.coords.longitude);
-      map.setCenter(initialLocation);
-      var userMarker = new google.maps.Marker({
-          position: initialLocation,
-          map: map,
-          icon: earthIcon,
-          title: 'YOU ARE HERE',
-          zIndex: 3
-      });
-    }, function() {
-      handleNoGeolocation(browserSupportFlag);
-    });
+    navigator.geolocation.getCurrentPosition(
+      function(position) {
+        processCoords(position.coords.latitude, position.coords.longitude, map);
+      },
+      function() {
+        processCoords(bostonLocation.lat, bostonLocation.lng, map);
+      }
+    );
   }
-  // Browser doesn't support Geolocation
   else {
-    browserSupportFlag = false;
-    handleNoGeolocation(browserSupportFlag);
+    processCoords(bostonLocation.lat, bostonLocation.lng, map);
   }
+  //drawOrbit(map, '9081 APM')
+  //readCsvFile(pathToAsteroidsFile);
+}
+
+function processCoords(lat, lng, map) {
+  var userLocation = new google.maps.LatLng(lat, lng);
+  map.setCenter(userLocation);
+  userMarker = new google.maps.Marker({
+    position: userLocation,
+    map: map,
+    icon: earthIcon,
+    title: 'YOU ARE HERE',
+    zIndex: 3
+  });
+  var sunLocation = getSunLatLng(earthx, earthy, lat, lng)
+  var sunLocationLatLng = new google.maps.LatLng(sunLocation.lat, sunLocation.lng);
   
   var sunMarker = new google.maps.Marker({
-      position: bostonLocation,
+      position: sunLocationLatLng,
       map: map,
       icon: sunIcon,
       title: 'YOU ARE HERE',
@@ -111,26 +116,7 @@ function initialize() {
   
   drawMarkers(map)
   
-  //drawOrbit(map, '9081 APM')
-  //readCsvFile(pathToAsteroidsFile);
-}
-
-function handleNoGeolocation(errorFlag) {
-  if (errorFlag == true) {
-    alert("Geolocation service failed. We've placed you in Boston (the center of the universe).");
-    initialLocation = bostonLocation;
-  } else {
-    alert("Your browser doesn't support geolocation. We've placed you in Boston (the center of the universe).");
-    initialLocation = bostonLocation;
-  }
-  map.setCenter(initialLocation);
-  var userMarker = new google.maps.Marker({
-    position: initialLocation,
-    map: map,
-    icon: earthIcon,
-    title: 'YOU ARE HERE',
-    zIndex: 3
-  });
+  console.log()
 }
 
 function drawMarkers(map) {
@@ -165,7 +151,6 @@ function attachListener(marker, toolTip) {
   var infowindow = new google.maps.InfoWindow({
     content: toolTip
   });
-  
   
   google.maps.event.addListener(marker, 'click', function() {
     asteroidOrbit.setMap(null);
@@ -207,12 +192,6 @@ function readCsvFile(file) {
     rawFile.send(null);
 }
 
-function evalSciNotation(coordString) {
-  var baseNum = parseFloat(coordString.slice(0, coordString.indexOf("E")));
-  var expoNum = parseFloat(coordString.slice(coordString.indexOf("E")+1));
-  return baseNum * Math.pow(10, expoNum);
-}
-
 function csvToArray(csvString) {
   // The array we're going to build
   var csvArray   = [];
@@ -235,9 +214,9 @@ function csvToArray(csvString) {
       var propLabel = csvHeaders[propIndex].replace(/^"|"$/g,'');
       rowObject[propLabel] = propValue;
     }
-    rowObject['x'] = evalSciNotation(rowObject['x']);
-    rowObject['y'] = evalSciNotation(rowObject['y']);
-    rowObject['z'] = evalSciNotation(rowObject['z']);
+    rowObject['x'] = rowObject['x'];
+    rowObject['y'] = rowObject['y'];
+    rowObject['z'] = rowObject['z'];
   }
   return csvArray;
 }
