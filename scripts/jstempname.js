@@ -13,19 +13,19 @@ var asteroidIcon = {
   url: "images/asteroid_dealwithit.png", // url
   scaledSize: new google.maps.Size(asteroidWidth, asteroidHeight), // scaled size
   origin: new google.maps.Point(0, 0), // origin
-  anchor: new google.maps.Point(0, 0)  // anchor
+  anchor: new google.maps.Point(10, 16)  // anchor
 };
 var sunIcon = {
   url: "images/sun_dealwithit.png", // url
   scaledSize: new google.maps.Size(sunWidth, sunHeight), // scaled size
   origin: new google.maps.Point(0, 0), // origin
-  anchor: new google.maps.Point(0, 0)  // anchor
+  anchor: new google.maps.Point(16, 16)  // anchor
 }
 var earthIcon = {
   url: "images/earth_dealwithit.png", // url
   scaledSize: new google.maps.Size(sunWidth, sunHeight), // scaled size
   origin: new google.maps.Point(0, 0), // origin
-  anchor: new google.maps.Point(0, 0)  // anchor
+  anchor: new google.maps.Point(16, 16)  // anchor
 }
 var asteroidOrbit;
 var asteroidList = [
@@ -33,26 +33,26 @@ var asteroidList = [
                                                                          { lat:42.3608, long:-71.0566 },
                                                                          { lat:42.3608, long:-71.0641 },
                                                                          { lat:42.3633, long:-71.0566 }] },
-  { name: '9082 APM', location: { lat:42.3133, long:-71.0566 }, orbit: [ { lat:42.3133, long:-71.0566 },
-                                                                         { lat:42.3108, long:-71.0566 },
-                                                                         { lat:42.3108, long:-71.0641 },
-                                                                         { lat:42.3133, long:-71.0566 }] },
-  { name: '9083 APM', location: { lat:42.2633, long:-71.0566 }, orbit: [ { lat:42.2633, long:-71.0566 },
+  { name: '9082 APM', location: { lat:42.3433, long:-71.0566 }, orbit: [ { lat:42.3433, long:-71.0566 },
+                                                                         { lat:42.3408, long:-71.0566 },
+                                                                         { lat:42.3408, long:-71.0641 },
+                                                                         { lat:42.3433, long:-71.0566 }] },
+  { name: '9083 APM', location: { lat:42.3233, long:-71.0566 }, orbit: [ { lat:42.3233, long:-71.0566 },
+                                                                         { lat:42.3208, long:-71.0566 },
+                                                                         { lat:42.3208, long:-71.0641 },
+                                                                         { lat:42.3233, long:-71.0566 }] },
+  { name: '9084 APM', location: { lat:42.3033, long:-71.0566 }, orbit: [ { lat:42.3033, long:-71.0566 },
+                                                                         { lat:42.3008, long:-71.0566 },
+                                                                         { lat:42.3008, long:-71.0641 },
+                                                                         { lat:42.3033, long:-71.0566 }] },
+  { name: '9085 APM', location: { lat:42.2833, long:-71.0566 }, orbit: [ { lat:42.2833, long:-71.0566 },
+                                                                         { lat:42.2808, long:-71.0566 },
+                                                                         { lat:42.2808, long:-71.0641 },
+                                                                         { lat:42.2833, long:-71.0566 }] },
+  { name: '9086 APM', location: { lat:42.2633, long:-71.0566 }, orbit: [ { lat:42.2633, long:-71.0566 },
                                                                          { lat:42.2608, long:-71.0566 },
                                                                          { lat:42.2608, long:-71.0641 },
-                                                                         { lat:42.2633, long:-71.0566 }] },
-  { name: '9084 APM', location: { lat:42.2633, long:-71.0566 }, orbit: [ { lat:42.2633, long:-71.0566 },
-                                                                         { lat:42.2608, long:-71.0566 },
-                                                                         { lat:42.2608, long:-71.0641 },
-                                                                         { lat:42.2633, long:-71.0566 }] },
-  { name: '5634 APM', location: { lat:42.3680, long:-71.0697 }, orbit: [ { lat:42.8610, long:-71.8560 },
-                                                                         { lat:42.8710, long:-71.8560 },
-                                                                         { lat:42.8660, long:-71.8610 },
-                                                                         { lat:42.8610, long:-71.8560 }] },
-  { name: '8783 APM', location: { lat:42.3650, long:-71.0590 }, orbit: [ { lat:42.9610, long:-71.9560 },
-                                                                         { lat:42.9710, long:-71.9560 },
-                                                                         { lat:42.9660, long:-71.9610 },
-                                                                         { lat:42.9610, long:-71.9560 }] }
+                                                                         { lat:42.2633, long:-71.0566 }] }
 ];
 
 var flightPlanCoordinates = [
@@ -102,6 +102,9 @@ function initialize() {
   });
   
   drawMarkers(map)
+  
+  drawOrbit(map, '9081 APM')
+  drawOrbit(map, '9082 APM')
   
   //drawOrbit(map, '9081 APM')
   //readCsvFile(pathToAsteroidsFile);
@@ -157,7 +160,8 @@ function drawOrbit(map, nameOfAsteroid) {
         geodesic: true,
         strokeColor: '#FF0000',
         strokeOpacity: 1.0,
-        strokeWeight: 2
+        strokeWeight: 2,
+        zIndex: 9
       });
       asteroidOrbit.setMap(map);
       return
