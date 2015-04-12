@@ -130,6 +130,7 @@ function processCoords(lat, lng, map) {
   });
   var csvObjects = csvToArray(csvData);
   var asteroidList = getAsteroidObjects(csvObjects, sunLocationLatLng);
+  asteroidList = demoModeAsteroids(asteroidList);
   drawMarkers(map, asteroidList, sunLocationLatLng);
 }
 
@@ -176,6 +177,14 @@ function getAsteroidObjects(csvArray, sunCoords) {
     toolTip = toolTip.concat("km</td></tr></table>");
     var asteroid = { name: csvElement.Object, location: asteroidLocation, orbit: asteroidOrbit, tooltip: toolTip };
     asteroidList.push(asteroid);
+  }
+  return asteroidList;
+}
+
+function demoModeAsteroids(asteroidList) {
+  for (asteroid of asteroidList) {
+    var index = Math.floor((Math.random() * 83));
+    asteroid.location = asteroid.orbit[index];
   }
   return asteroidList;
 }
