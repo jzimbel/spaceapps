@@ -25,31 +25,31 @@ function constructEllipse(q, Q, e, i, w, sun)
   var points = new Array();
   for(x_temp = 0; x_temp <= a; x_temp+=(a/20)) // top right quadrant
   {
-	var y_temp = b * Math.sqrt(1 - (x_temp*x_temp/(a*a)));
-	points.push({x:(x_temp * Math.cos(toRadians(i))), y:(y_temp)});
+  var y_temp = b * Math.sqrt(1 - (x_temp*x_temp/(a*a)));
+  points.push({x:(x_temp * Math.cos(toRadians(i))), y:(y_temp)});
   }
   // Mirror all points to complete ellipse
   for(index = 20; index >= 0; index--) // bottom right quadrant
   {
-	points.push({x:(points[index].x), y:(points[index].y * -1)});
+  points.push({x:(points[index].x), y:(points[index].y * -1)});
   }
   for(index = 0; index < 21; index++) // bottom left quadrant
   {
-	points.push({x:(points[index].x * -1), y:(points[index].y * -1)});
+  points.push({x:(points[index].x * -1), y:(points[index].y * -1)});
   }
   for(index = 20; index >= 0; index--) // top left quadrant
   {
-	points.push({x:(points[index].x * -1), y:(points[index].y)});
+  points.push({x:(points[index].x * -1), y:(points[index].y)});
   }
   // Shift over points by offset (move Sun to (0,0))
   for(index = 0; index < points.length; index++)
   {
-	points[index].x += offset;
+  points[index].x += offset;
   }
   // Rotate points by argument of perihelion
   for(index = 0; index < points.length; index++)
   {
-	points[index] = rotate(points[index].x, points[index].y, w);
+  points[index] = rotate(points[index].x, points[index].y, w);
   }
   
   var coords = new Array();
@@ -69,30 +69,41 @@ function toRadians(angle)
 }
 
 /*
- * This converts AU coordinates of an astronomical body to {lat, lng} coordinates
+ * This function converts AU coordinates of an astronomical body to {lat, lng} coordinates
  */
 function getLatLng(x_old, y_old, sun)
 {
-	var y = (y_old / 110.54) + sun.lat(); // convert to lat, offset by sun
-	var x = (x_old / (111.32 * Math.cos(toRadians(y)))) + sun.lng(); // convert to lng, offset by sun
-	return {lat:y, lng:x};
+  var y = (y_old / 110.54) + sun.lat(); // convert to lat, offset by sun
+  var x = (x_old / (111.32 * Math.cos(toRadians(y)))) + sun.lng(); // convert to lng, offset by sun
+  return {lat:y, lng:x};
 }
 
 /*
- * This rotates a point in an orbit based on w, the argument of perihelion
+ * This function rotates a point in an orbit based on w, the argument of perihelion
  */
 function rotate(x, y, w)
 {
-	w = toRadians(w);
-	var dist = Math.sqrt(x*x + y*y); // distance between Sun and that point
-	var alpha = Math.atan(y/x); // rads
-	var theta = w + alpha; // rads
-	var Cy = dist * Math.sin(theta);
-	var Cx = dist * Math.cos(theta);
-	if(x < 0)
-	{
-		Cx = Cx * -1;
-		Cy = Cy * -1;
-	}
-	return {x:Cx, y:Cy};
+  w = toRadians(w);
+  var dist = Math.sqrt(x*x + y*y); // distance between Sun and that point
+  var alpha = Math.atan(y/x); // rads
+  var theta = w + alpha; // rads
+  var Cy = dist * Math.sin(theta);
+  var Cx = dist * Math.cos(theta);
+  if(x < 0)
+  {
+    Cx = Cx * -1;
+    Cy = Cy * -1;
+  }
+  return {x:Cx, y:Cy};
 } 
+
+/*
+ * This function returns a {lat, lng} object representing the AU position of the sun relative 
+ * to the current location of the user (representing the current location of the Earth)
+ */
+function getSunLatLng(earthX, earthY, earthLat, earthLng)
+{
+  var sunX = earthX * -1;
+  var sunY = earthY * -1;
+  return getLatLng(sunX, sunY, new google.maps.LatLng(earthLat, earthLng));
+}
