@@ -195,8 +195,14 @@ function getAsteroidObjects(csvArray, sunCoords) {
     var asteroidLocation = getLatLng(csvElement.x, csvElement.y, sunCoords);
     var asteroidOrbit = constructEllipse(parseFloat(csvElement.q), parseFloat(csvElement.Q), parseFloat(csvElement.e),
                                          parseFloat(csvElement.i), parseFloat(csvElement.w), sunCoords);
-    var asteroidZInMeters = csvElement.z * 1000;
-    var toolTip = "height above/below ground level: ".concat(asteroidZInMeters.toString())
+    var asteroidZInMeters = Math.round(100*(csvElement.z * 1000))/100;
+    var asteroidXInLatLng = Math.round(10000*(csvElement.x))/10000;
+    var asteroidYInLatLng = Math.round(10000*(csvElement.y))/10000;
+    var toolTip = "name: \"".concat(csvElement.Object);
+    toolTip = toolTip.concat("\", height: \"".concat(asteroidZInMeters.toString()));
+    toolTip = toolTip.concat("\"m, dx from sun: \"".concat(asteroidXInLatLng.toString()));
+    toolTip = toolTip.concat("\"km, dy from sun: \"".concat(asteroidYInLatLng.toString()));
+    toolTip = toolTip.concat("\"km");
     var asteroid = { name: csvElement.Object, location: asteroidLocation, orbit: asteroidOrbit, tooltip: toolTip };
     asteroidList.push(asteroid);
   }
