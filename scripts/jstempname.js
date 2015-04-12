@@ -112,10 +112,10 @@ function initialize() {
 
 function handleNoGeolocation(errorFlag) {
   if (errorFlag == true) {
-    alert("Geolocation service failed. We've placed you in Boston");
+    alert("Geolocation service failed. We've placed you in Boston (the center of the universe).");
     initialLocation = bostonLocation;
   } else {
-    alert("Your browser doesn't support geolocation. We've placed you in Boston.");
+    alert("Your browser doesn't support geolocation. We've placed you in Boston (the center of the universe).");
     initialLocation = bostonLocation;
   }
   map.setCenter(initialLocation);
