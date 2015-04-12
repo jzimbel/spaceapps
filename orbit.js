@@ -1,4 +1,21 @@
-function constructEllipse(q, Q, e, i, w)
+/*
+ * Created by Jeff Kennedy @ 4/11/2015
+ * 
+ * This function returns a list of {lat, lng} pairs that correspond to
+ * the orbit of an entity in our solar system that orbits our Sun, where
+ * the Sun is a point on the Earth. All orbits, originally based in AU,
+ * are translated at a 1:1 ratio to km (1 AU = 1 km).
+ *
+ * This function requires the following variables:
+ *   q: Perihelion distance of the orbit, measured in AU. (q < Q)
+ *   Q: Aphelion distance of the orbit, measured in AU. (q < Q)
+ *   e: Eccentricity of the orbit, no units
+ *   i: Inclination of the orbit with respect to the ecliptic plane, measured
+ *      measured in degrees
+ *   w: Argument of perihelion, measured in degrees
+ *   sun: the location of the Sun as a google.maps.LatLng object (for offset)
+ */
+function constructEllipse(q, Q, e, i, w, sun)
 {
   // Generic... calculate 21 points
   var a = (Q + q)/2;
@@ -43,18 +60,27 @@ function constructEllipse(q, Q, e, i, w)
   return coords;
 }
 
+/*
+ * This function converts degrees to radians.
+ */
 function toRadians(angle)
 {
   return angle * (Math.PI / 180);
 }
 
+/*
+ * This converts AU coordinates of an astronomical body to {lat, lng} coordinates
+ */
 function getLatLng(x_old, y_old)
 {
-	var y = (y_old / 110.54) + boston.lat(); // convert to lat, offset by boston
-	var x = (x_old / (111.32 * Math.cos(toRadians(y)))) + boston.lng(); // convert to lng, offset by boston
+	var y = (y_old / 110.54) + sun.lat(); // convert to lat, offset by sun
+	var x = (x_old / (111.32 * Math.cos(toRadians(y)))) + sun.lng(); // convert to lng, offset by sun
 	return {lat:y, lng:x};
 }
 
+/*
+ * This rotates a point in an orbit based on w, the argument of perihelion
+ */
 function rotate(x, y, w)
 {
 	w = toRadians(w);
