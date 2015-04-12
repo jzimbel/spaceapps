@@ -1,6 +1,6 @@
 /*
  * Created by Jeff Kennedy @ 4/11/2015
- * 
+ *
  * This function returns a list of {lat, lng} pairs that correspond to
  * the orbit of an entity in our solar system that orbits our Sun, where
  * the Sun is a point on the Earth. All orbits, originally based in AU,
@@ -22,11 +22,14 @@ function constructEllipse(q, Q, e, i, w, sun)
   var b = e * (Q + q) / 2;
   var offset = Q - (Q + q) / 2;
   
+  console.log(q);
+  
   var points = new Array();
-  for(x_temp = 0; x_temp <= a; x_temp+=(a/20)) // top right quadrant
+  for(i = 0; i <= 20; i++) // top right quadrant
   {
-  var y_temp = b * Math.sqrt(1 - (x_temp*x_temp/(a*a)));
-  points.push({x:(x_temp * Math.cos(toRadians(i))), y:(y_temp)});
+    x_temp = a * (i/20);
+    var y_temp = b * Math.sqrt(1 - (x_temp*x_temp/(a*a)));
+    points.push({x:(x_temp * Math.cos(toRadians(i))), y:(y_temp)});
   }
   // Mirror all points to complete ellipse
   for(index = 20; index >= 0; index--) // bottom right quadrant
@@ -95,10 +98,10 @@ function rotate(x, y, w)
     Cy = Cy * -1;
   }
   return {x:Cx, y:Cy};
-} 
+}
 
 /*
- * This function returns a {lat, lng} object representing the AU position of the sun relative 
+ * This function returns a {lat, lng} object representing the AU position of the sun relative
  * to the current location of the user (representing the current location of the Earth)
  */
 function getSunLatLng(earthX, earthY, earthLat, earthLng)
