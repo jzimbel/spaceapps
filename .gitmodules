@@ -1,3 +1,0 @@
-[submodule "telnet"]
-	path = node-telnet-client
-	url = git@github.com:jzimbel/node-telnet-client.git
