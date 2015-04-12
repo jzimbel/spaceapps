@@ -22,8 +22,6 @@ function constructEllipse(q, Q, e, i, w, sun)
   var b = e * (Q + q) / 2;
   var offset = Q - (Q + q) / 2;
   
-  console.log(q);
-  
   var points = new Array();
   for(i = 0; i <= 20; i++) // top right quadrant
   {

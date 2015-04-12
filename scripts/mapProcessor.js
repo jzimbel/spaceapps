@@ -83,33 +83,6 @@ var asteroidOrbit = new google.maps.Polyline({
   zIndex: 9
 });
 
-//var asteroidList = [
-//  { name: '9081 APM', location: { lat:42.3633, lng:-71.0566 }, orbit: [ { lat:42.3633, lng:-71.0566 },
-//                                                                        { lat:42.3608, lng:-71.0566 },
-//                                                                        { lat:42.3608, lng:-71.0641 },
-//                                                                        { lat:42.3633, lng:-71.0566 }] },
-//  { name: '9082 APM', location: { lat:42.3433, lng:-71.0566 }, orbit: [ { lat:42.3433, lng:-71.0566 },
-//                                                                        { lat:42.3408, lng:-71.0566 },
-//                                                                        { lat:42.3408, lng:-71.0641 },
-//                                                                        { lat:42.3433, lng:-71.0566 }] },
-//  { name: '9083 APM', location: { lat:42.3233, lng:-71.0566 }, orbit: [ { lat:42.3233, lng:-71.0566 },
-//                                                                        { lat:42.3208, lng:-71.0566 },
-//                                                                        { lat:42.3208, lng:-71.0641 },
-//                                                                        { lat:42.3233, lng:-71.0566 }] },
-//  { name: '9084 APM', location: { lat:42.3033, lng:-71.0566 }, orbit: [ { lat:42.3033, lng:-71.0566 },
-//                                                                        { lat:42.3008, lng:-71.0566 },
-//                                                                        { lat:42.3008, lng:-71.0641 },
-//                                                                        { lat:42.3033, lng:-71.0566 }] },
-//  { name: '9085 APM', location: { lat:42.2833, lng:-71.0566 }, orbit: [ { lat:42.2833, lng:-71.0566 },
-//                                                                        { lat:42.2808, lng:-71.0566 },
-//                                                                        { lat:42.2808, lng:-71.0641 },
-//                                                                        { lat:42.2833, lng:-71.0566 }] },
-//  { name: '9086 APM', location: { lat:42.2633, lng:-71.0566 }, orbit: [ { lat:42.2633, lng:-71.0566 },
-//                                                                        { lat:42.2608, lng:-71.0566 },
-//                                                                        { lat:42.2608, lng:-71.0641 },
-//                                                                        { lat:42.2633, lng:-71.0566 }] }
-//];
-
 function initialize() {
   // Create the map.
   var mapOptions = {
@@ -133,8 +106,6 @@ function initialize() {
   else {
     processCoords(bostonLocation.lat, bostonLocation.lng, map);
   }
-  //drawOrbit(map, '9081 APM')
-  //readCsvFile(pathToAsteroidsFile);
 }
 
 function processCoords(lat, lng, map) {
@@ -198,11 +169,11 @@ function getAsteroidObjects(csvArray, sunCoords) {
     var asteroidZInMeters = Math.round(100*(csvElement.z * 1000))/100;
     var asteroidXInLatLng = Math.round(10000*(csvElement.x))/10000;
     var asteroidYInLatLng = Math.round(10000*(csvElement.y))/10000;
-    var toolTip = "name: \"".concat(csvElement.Object);
-    toolTip = toolTip.concat("\", height: \"".concat(asteroidZInMeters.toString()));
-    toolTip = toolTip.concat("\"m, dx from sun: \"".concat(asteroidXInLatLng.toString()));
-    toolTip = toolTip.concat("\"km, dy from sun: \"".concat(asteroidYInLatLng.toString()));
-    toolTip = toolTip.concat("\"km");
+    var toolTip = "<table><tr><td><b>name:  </b></td><td>".concat(csvElement.Object);
+    toolTip = toolTip.concat("<td></tr><tr><td><b>altitude:  </b></td><td>".concat(asteroidZInMeters.toString()));
+    toolTip = toolTip.concat("m</td></tr><tr><td><b>dx from sun:  </b></td><td>".concat(asteroidXInLatLng.toString()));
+    toolTip = toolTip.concat("km</td></tr><tr><td><b>dy from sun:  </b></td><td>".concat(asteroidYInLatLng.toString()));
+    toolTip = toolTip.concat("km</td></tr></table>");
     var asteroid = { name: csvElement.Object, location: asteroidLocation, orbit: asteroidOrbit, tooltip: toolTip };
     asteroidList.push(asteroid);
   }
