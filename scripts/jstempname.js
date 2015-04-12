@@ -130,6 +130,12 @@ function readCsvFile(file) {
     rawFile.send(null);
 }
 
+function evalSciNotation(coordString) {
+  var baseNum = parseFloat(coordString.slice(0, coordString.indexOf("E")));
+  var expoNum = parseFloat(coordString.slice(coordString.indexOf("E")+1));
+  return baseNum * Math.pow(10, expoNum);
+}
+
 function csvToArray(csvString) {
   // The array we're going to build
   var csvArray   = [];
@@ -152,6 +158,9 @@ function csvToArray(csvString) {
       var propLabel = csvHeaders[propIndex].replace(/^"|"$/g,'');
       rowObject[propLabel] = propValue;
     }
+    rowObject['x'] = evalSciNotation(rowObject['x']);
+    rowObject['y'] = evalSciNotation(rowObject['y']);
+    rowObject['z'] = evalSciNotation(rowObject['z']);
   }
   return csvArray;
 }
