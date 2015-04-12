@@ -27,14 +27,39 @@ var earthIcon = {
   origin: new google.maps.Point(0, 0), // origin
   anchor: new google.maps.Point(0, 0)  // anchor
 }
-
+var asteroidOrbit;
 var asteroidList = [
-  { name: '9081 APM', location: { lat:42.3633, long:-71.0566 } },
-  { name: '8081 APM', location: { lat:42.3580, long:-71.0597 } },
-  { name: '7077 APM', location: { lat:42.3480, long:-71.0537 } },
-  { name: '9011 APM', location: { lat:42.3580, long:-71.0497 } },
-  { name: '5634 APM', location: { lat:42.3680, long:-71.0697 } },
-  { name: '8783 APM', location: { lat:42.3650, long:-71.0590 } }
+  { name: '9081 APM', location: { lat:42.3633, long:-71.0566 }, orbit: [ { lat:42.3633, long:-71.0566 },
+                                                                         { lat:42.3608, long:-71.0566 },
+                                                                         { lat:42.3608, long:-71.0641 },
+                                                                         { lat:42.3633, long:-71.0566 }] },
+  { name: '9082 APM', location: { lat:42.3133, long:-71.0566 }, orbit: [ { lat:42.3133, long:-71.0566 },
+                                                                         { lat:42.3108, long:-71.0566 },
+                                                                         { lat:42.3108, long:-71.0641 },
+                                                                         { lat:42.3133, long:-71.0566 }] },
+  { name: '9083 APM', location: { lat:42.2633, long:-71.0566 }, orbit: [ { lat:42.2633, long:-71.0566 },
+                                                                         { lat:42.2608, long:-71.0566 },
+                                                                         { lat:42.2608, long:-71.0641 },
+                                                                         { lat:42.2633, long:-71.0566 }] },
+  { name: '9084 APM', location: { lat:42.2633, long:-71.0566 }, orbit: [ { lat:42.2633, long:-71.0566 },
+                                                                         { lat:42.2608, long:-71.0566 },
+                                                                         { lat:42.2608, long:-71.0641 },
+                                                                         { lat:42.2633, long:-71.0566 }] },
+  { name: '5634 APM', location: { lat:42.3680, long:-71.0697 }, orbit: [ { lat:42.8610, long:-71.8560 },
+                                                                         { lat:42.8710, long:-71.8560 },
+                                                                         { lat:42.8660, long:-71.8610 },
+                                                                         { lat:42.8610, long:-71.8560 }] },
+  { name: '8783 APM', location: { lat:42.3650, long:-71.0590 }, orbit: [ { lat:42.9610, long:-71.9560 },
+                                                                         { lat:42.9710, long:-71.9560 },
+                                                                         { lat:42.9660, long:-71.9610 },
+                                                                         { lat:42.9610, long:-71.9560 }] }
+];
+
+var flightPlanCoordinates = [
+    new google.maps.LatLng(42.3610, -71.0560),
+    new google.maps.LatLng(42.3710, -71.0560),
+    new google.maps.LatLng(42.3660, -71.0610),
+    new google.maps.LatLng(42.3610, -71.0560)
 ];
 
 function initialize() {
@@ -77,7 +102,9 @@ function initialize() {
   });
   
   drawMarkers(map)
-  readCsvFile(pathToAsteroidsFile);
+  
+  //drawOrbit(map, '9081 APM')
+  //readCsvFile(pathToAsteroidsFile);
 }
 
 function handleNoGeolocation(errorFlag) {
@@ -102,13 +129,39 @@ function drawMarkers(map) {
   for (asteroid of asteroidList)
   {
     asteroidPosition = new google.maps.LatLng(asteroid.location.lat, asteroid.location.long);
-    new google.maps.Marker({
+    var marker = new google.maps.Marker({
       position: asteroidPosition,
       map: map,
       icon: asteroidIcon,
       title: asteroid.name,
       zIndex: 4
     });
+    google.maps.event.addListener(marker, 'click', function() {
+      drawOrbit(map, marker.getTitle());
+    });
+  }
+}
+
+function drawOrbit(map, nameOfAsteroid) {
+  for (asteroid of asteroidList)
+  {
+    if (asteroid.name === nameOfAsteroid)
+    {
+      var orbitCoordinates = [];
+      for (asteroidOrbitCoordinate of asteroid.orbit)
+      {
+        orbitCoordinates.push(new google.maps.LatLng(asteroidOrbitCoordinate.lat, asteroidOrbitCoordinate.long))
+      }
+      asteroidOrbit = new google.maps.Polyline({
+        path: orbitCoordinates,
+        geodesic: true,
+        strokeColor: '#FF0000',
+        strokeOpacity: 1.0,
+        strokeWeight: 2
+      });
+      asteroidOrbit.setMap(map);
+      return
+    }
   }
 }
 
