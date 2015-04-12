@@ -55,7 +55,7 @@ function constructEllipse(q, Q, e, i, w, sun)
   var coords = new Array();
   for(index = 0; index < points.length; index++)
   {
-    coords.push(getLatLng(points[index].x, points[index].y));
+    coords.push(getLatLng(points[index].x, points[index].y, sun));
   }
   return coords;
 }
@@ -71,7 +71,7 @@ function toRadians(angle)
 /*
  * This converts AU coordinates of an astronomical body to {lat, lng} coordinates
  */
-function getLatLng(x_old, y_old)
+function getLatLng(x_old, y_old, sun)
 {
 	var y = (y_old / 110.54) + sun.lat(); // convert to lat, offset by sun
 	var x = (x_old / (111.32 * Math.cos(toRadians(y)))) + sun.lng(); // convert to lng, offset by sun
